@@ -12,34 +12,22 @@ const addEventListenerForButtons = (buttons) => {
       let divItem = button.parentElement;
       let quantityItem = divItem.querySelector('.quantity');
       let currentQuantity = parseFloat(quantityItem.innerText);
-
       if (button.classList.contains('addbutton')) {
         quantityItem.innerText = currentQuantity += 1;
         } else if (button.classList.contains('lessbutton')) {
-        quantityItem.innerText = currentQuantity -=1;
+        if (quantityItem.innerText > 1) {
+          quantityItem.innerText = currentQuantity - 1;
+        };
         } else if (button.classList.contains('deletebutton')) {
        const removeItem = divItem.children[1].innerText;
-        // Obtener la ultima version de la lista del localStorage
         savedFruits = JSON.parse(localStorage.getItem('ls-fruits'));
-        // Actualizar la lista (eliminar el elemento)
         let updatedSavedFruits = deleteElementByKey(savedFruits, 'itemName', removeItem);
-        //eliminar el item del HTML.
         divItem.remove();
-        // Guardar la nueva version de la lista
-        console.log('updatedSavedFruits', updatedSavedFruits);
         localStorage.setItem('ls-fruits', JSON.stringify(updatedSavedFruits));
         };
     });
   });
 }
-
-// ADD NEW HARDCODED ITEM
-// 1. Definir lista de objetos de categoria frutas
-// const f = [
-//   {itemName: "Apple", itemQuantity: "1"},
-//   {itemName: "Orange", itemQuantity: "2"},
-//   {itemName: "Banana", itemQuantity: "3"}
-// ];
 
 // GET UPDATED LOCAL STORAGE FRUIT LIST IF LIST EXISTS
 const getLocalStorageFruitList = () => {
@@ -51,7 +39,7 @@ const getLocalStorageFruitList = () => {
   return savedFruitsAuxiliar;
 }
 // 1.A) Guardar lista de objetos en localStorage
-//localStorage.setItem('ls-fruits', JSON.stringify(f)); convierte el objeto en una cadena string JSON
+// localStorage.setItem('ls-fruits', JSON.stringify(f)); convierte el objeto en una cadena string JSON
 let savedFruits = getLocalStorageFruitList();
 
 // 1.B) Obtener lista de objetos en localStorage
@@ -72,14 +60,12 @@ savedFruits.forEach(fruit => {
 </div>`);
 });
 
-// add new item button
+// ADD NEW ITEM BUTTON
 
 const addNewButtons = document.querySelectorAll(".addnew");
 addNewButtons.forEach(addNewButton => {
   addNewButton.addEventListener("click", () => {
-    // 1. Al apretar un boton poner alert para ingresar nombre de nuevo item.
     let newItem = prompt('Which item do you want to add?');
-     // 2. Al aceptar agregarlo a la lista de items abajo del ultimo item en el HTML.
     addNewButton.insertAdjacentHTML('beforebegin', `<div class="item">
           <input type="checkbox" class="checkbox">
           <p>${newItem}</p>
@@ -93,15 +79,12 @@ addNewButtons.forEach(addNewButton => {
     let lastAddedItemButtons = lastAddedItem.querySelectorAll('button');
     addEventListenerForButtons(lastAddedItemButtons);
 
-    // 3. Guardar el new item en el localStorage para que la proxima vez que se cargue quede guardado:
-    // 3.1 Buscar la lista en el localStorage (listItem).
-    savedFruits = getLocalStorageFruitList();
-    // 3.2 Agregar el new item a la lista con push. Tiene que ser un objeto (nombre q ingresa el user y cantidad fijada)
-    let newItemObject = {itemName: newItem, itemQuantity: "1"};
+    // 3. Save new item in localStorage for next time
+    savedFruits = getLocalStorageFruitList(); // 3.1 Search la lista en el localStorage (listItem).
+    let newItemObject = {itemName: newItem, itemQuantity: "1"}; // 3.2 Add new item  to list.
     savedFruits.push(newItemObject);
     console.log('savedFruits', savedFruits);
-    // 3.3 Guardar en localStorage la lista actualizada
-    localStorage.setItem('ls-fruits', JSON.stringify(savedFruits));
+    localStorage.setItem('ls-fruits', JSON.stringify(savedFruits)); // 3.3 Save in localStorage updated list
   });
 });
 
@@ -109,8 +92,6 @@ addNewButtons.forEach(addNewButton => {
 // modify quantity
 
 const buttons = document.querySelectorAll("button");
-
-
 addEventListenerForButtons(buttons);
 
 

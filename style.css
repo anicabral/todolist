@@ -28,24 +28,23 @@ h2 {
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   position: relative;
-
+  align-items: center;
 }
 
 .checkbox {
   margin-right: 10px;
 }
 
-
 .button {
   position: absolute;
-  /* Ajusta la posición a la derecha según tus preferencias */
 }
 
 .addbutton {
