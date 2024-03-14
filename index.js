@@ -20,40 +20,40 @@ const addEventListenerForButtons = (buttons) => {
         };
         } else if (button.classList.contains('deletebutton')) {
        const removeItem = divItem.children[1].innerText;
-        savedFruits = JSON.parse(localStorage.getItem('ls-fruits'));
-        let updatedSavedFruits = deleteElementByKey(savedFruits, 'itemName', removeItem);
+        savedTodays = JSON.parse(localStorage.getItem('todays'));
+        let updatedSavedTodays = deleteElementByKey(savedTodays, 'itemName', removeItem);
         divItem.remove();
-        localStorage.setItem('ls-fruits', JSON.stringify(updatedSavedFruits));
+        localStorage.setItem('todays', JSON.stringify(updatedSavedTodays));
         };
     });
   });
 }
 
-// GET UPDATED LOCAL STORAGE FRUIT LIST IF LIST EXISTS
-const getLocalStorageFruitList = () => {
-  let savedFruitsAuxiliar = []; // si no hay nada dentro del localStorage, devuelve esta lista vacia
-  let localStorageData = localStorage.getItem('ls-fruits'); // obtengo objeto del localStorage
+// GET UPDATED LOCAL STORAGE Today LIST IF LIST EXISTS
+const getLocalStorageTodayList = () => {
+  let savedTodaysAuxiliar = []; // si no hay nada dentro del localStorage, devuelve esta lista vacia
+  let localStorageData = localStorage.getItem('todays'); // obtengo objeto del localStorage
   if (localStorageData != null) {
-    savedFruitsAuxiliar = JSON.parse(localStorageData); // convierte la cadena json en un objeto.
+    savedTodaysAuxiliar = JSON.parse(localStorageData); // convierte la cadena json en un objeto.
   };
-  return savedFruitsAuxiliar;
+  return savedTodaysAuxiliar;
 }
 // 1.A) Guardar lista de objetos en localStorage
-// localStorage.setItem('ls-fruits', JSON.stringify(f)); convierte el objeto en una cadena string JSON
-let savedFruits = getLocalStorageFruitList();
+// localStorage.setItem('todays', JSON.stringify(f)); convierte el objeto en una cadena string JSON
+let savedTodays = getLocalStorageTodayList();
 
 // 1.B) Obtener lista de objetos en localStorage
 // llamo a la funcion getLocalStorage
 
 // 2. Recorrer la lista de objetos recuperada con un forEach
-savedFruits.forEach(fruit => {
+savedTodays.forEach(today => {
 // 3. Seleccionar el elemento adentro del cual vamos a insertar los items
-  const fruitsCategories = document.querySelector("#fruits");
+  const todaysCategories = document.querySelector("#todays");
 // 4. Insertar los items
-  fruitsCategories.insertAdjacentHTML('afterbegin', `<div class="item">
+  todaysCategories.insertAdjacentHTML('afterbegin', `<div class="item">
   <input type="checkbox" class="checkbox">
-  <p> ${fruit.itemName} </p>
-  <p class="quantity"> ${fruit.itemQuantity} </p>
+  <p> ${today.itemName} </p>
+  <p class="quantity"> ${today.itemQuantity} </p>
   <button class="lessbutton">-</button>
   <button class="addbutton">+</button>
   <button class="deletebutton"> Delete </button>
@@ -80,11 +80,11 @@ addNewButtons.forEach(addNewButton => {
     addEventListenerForButtons(lastAddedItemButtons);
 
     // 3. Save new item in localStorage for next time
-    savedFruits = getLocalStorageFruitList(); // 3.1 Search la lista en el localStorage (listItem).
+    savedTodays = getLocalStorageTodayList(); // 3.1 Search la lista en el localStorage (listItem).
     let newItemObject = {itemName: newItem, itemQuantity: "1"}; // 3.2 Add new item  to list.
-    savedFruits.push(newItemObject);
-    console.log('savedFruits', savedFruits);
-    localStorage.setItem('ls-fruits', JSON.stringify(savedFruits)); // 3.3 Save in localStorage updated list
+    savedTodays.push(newItemObject);
+    console.log('savedTodays', savedTodays);
+    localStorage.setItem('todays', JSON.stringify(savedTodays)); // 3.3 Save in localStorage updated list
   });
 });
 
