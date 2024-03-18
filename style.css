@@ -38,6 +38,9 @@ h2 {
   position: relative;
   align-items: center;
 }
+.item-name-check {
+  display:flex;
+}
 
 .checkbox {
   margin-right: 10px;
