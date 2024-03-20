@@ -16,19 +16,19 @@ const checkElement = (list, itemNameCheck) => {
 const deleteElementByKey = (array, key, value) => {
   return array.filter(obj => obj[key] !== value);
 }
-const addEventListenerForButtons = (buttons) => {
+const addEventListenerForButtons = (buttons, localStorageKeyName) => {
   buttons.forEach(button => {
     button.addEventListener("click", ()=> {
       let divItem = button.closest('.item');
       console.log('divItem', divItem);
       if (button.classList.contains('deletebutton')) {
-       const itemToRemove = divItem.querySelector('.item-name-check p').innerText;
-       console.log('itemToREMOVE', itemToRemove);
-        savedTodays = JSON.parse(localStorage.getItem('ls-todays'));
-        let updatedSavedTodays = deleteElementByKey(savedTodays, 'itemName', itemToRemove);
+        const itemToRemove = divItem.querySelector('.item-name-check p').innerText;
+        let savedTasks = getLocalStorageList(localStorageKeyName);
+        let updatedSavedTasks = deleteElementByKey(savedTasks, 'itemName', itemToRemove);
+        console.log('eliminadno de local storage keyname', localStorageKeyName);
         divItem.remove();
-        console.log('updated SaveTodays', updatedSavedTodays);
-        localStorage.setItem('ls-todays', JSON.stringify(updatedSavedTodays));
+        console.log('updated SaveTasks', updatedSavedTasks);
+        localStorage.setItem(localStorageKeyName, JSON.stringify(updatedSavedTasks));
       };
     });
   });
@@ -56,27 +56,45 @@ const addEventListenerForCheckboxes = (checkboxes) => {
 };
 
 // GET UPDATED LOCAL STORAGE Today LIST IF LIST EXISTS
-const getLocalStorageTodayList = () => {
-  let savedTodaysAuxiliar = []; // si no hay nada dentro del localStorage, devuelve esta lista vacia
-  let localStorageData = localStorage.getItem('ls-todays'); // obtengo objeto del localStorage
+const getLocalStorageList = (listName) => {
+  let savedListAuxiliar = []; // si no hay nada dentro del localStorage, devuelve esta lista vacia
+  let localStorageData = localStorage.getItem(listName); // obtengo objeto del localStorage
   if (localStorageData != null) {
-    savedTodaysAuxiliar = JSON.parse(localStorageData); // convierte la cadena json en un objeto.
+    savedListAuxiliar = JSON.parse(localStorageData); // convierte la cadena json en un objeto.
   };
-  return savedTodaysAuxiliar;
+  return savedListAuxiliar;
 }
-let savedTodays = getLocalStorageTodayList();
+let savedTodays = getLocalStorageList('ls-todays');
 savedTodays.forEach(today => {
-  const todaysCategories = document.querySelector("#todays");
+  const todaysSection = document.querySelector("#todays");
   let textDecoration = "none";
   let isChecked = "";
   if(today.checked){
     textDecoration = "line-through";
     isChecked = "checked";
     };
-  todaysCategories.insertAdjacentHTML('afterbegin', `<div class="item">
+  todaysSection.insertAdjacentHTML('afterbegin', `<div class="item">
                                                       <div class="item-name-check">
                                                        <input type="checkbox" class="checkbox" ${isChecked}>
                                                         <p style="text-decoration: ${textDecoration}"> ${today.itemName} </p>
+                                                      </div>
+                                                      <button class="deletebutton"> Delete </button>
+                                                    </div>`);
+});
+
+let savedWeeks = getLocalStorageList('ls-week');
+savedWeeks.forEach(week => {
+  const weekSection = document.querySelector("#weeks");
+  let textDecoration = "none";
+  let isChecked = "";
+  if(week.checked){
+    textDecoration = "line-through";
+    isChecked = "checked";
+    };
+  weekSection.insertAdjacentHTML('afterbegin', `<div class="item">
+                                                      <div class="item-name-check">
+                                                       <input type="checkbox" class="checkbox" ${isChecked}>
+                                                        <p style="text-decoration: ${textDecoration}"> ${week.itemName} </p>
                                                       </div>
                                                       <button class="deletebutton"> Delete </button>
                                                     </div>`);
@@ -86,6 +104,9 @@ savedTodays.forEach(today => {
 const addNewButtons = document.querySelectorAll(".addnew");
 addNewButtons.forEach(addNewButton => {
   addNewButton.addEventListener("click", () => {
+    console.log('apretar boton');
+    let divToAddItemId = addNewButton.parentElement.id;
+    console.log('div TO ADD ITEM ID ES ', divToAddItemId);
     let newItem = prompt('Which item do you want to add?');
     if(newItem === ""){
       alert('you cant add an empty task');
@@ -99,27 +120,38 @@ addNewButtons.forEach(addNewButton => {
                                                       </div>`);
       let parentElementAddNewItem = addNewButton.parentElement;
       let lastAddedItem = parentElementAddNewItem.querySelector('div:nth-last-child(2)');
+      let localStorageKeyName = '';
+      if(divToAddItemId === "todays"){
+        localStorageKeyName = 'ls-todays';
+      } else {
+        localStorageKeyName = 'ls-week';
+      }
       let lastAddedItemButtons = lastAddedItem.querySelectorAll('button');
-      addEventListenerForButtons(lastAddedItemButtons);
+      addEventListenerForButtons(lastAddedItemButtons, localStorageKeyName);
       let lastAddedItemCheckboxes = lastAddedItem.querySelectorAll('.checkbox');
       addEventListenerForCheckboxes(lastAddedItemCheckboxes);
-      // 3. Save new item in localStorage for next time
-      savedTodays = getLocalStorageTodayList(); // 3.1 Search la lista en el localStorage (listItem).
-      let newItemObject = {itemName: newItem, checked: false }; // 3.2 Add new item  to list.
-      savedTodays.push(newItemObject);
-      localStorage.setItem('ls-todays', JSON.stringify(savedTodays)); // 3.3 Save in localStorage updated list
+
+      // 1. Obtener la version actualizada segun que lista sea. (todays o week)
+      let savedTasks = getLocalStorageList(localStorageKeyName);
+      // 2. Definir el objeto a insertar (itemname y true or false)
+      let itemToAdd = {itemName: newItem, checked: false };
+      // 3. Agregar el nuevo objeto a la lista.
+      savedTasks.push(itemToAdd);
+      console.log('se esta guardando en', localStorageKeyName);
+      // 4. Guardar la lista con el key que corresponda.
+      localStorage.setItem(localStorageKeyName, JSON.stringify(savedTasks));
     }
   });
 });
 
 const buttons = document.querySelectorAll("button");
-addEventListenerForButtons(buttons);
+let localStorageKeyName = 'ls-todays';
+addEventListenerForButtons(buttons, localStorageKeyName);
 
 
 // checkbox
 const checkboxes = document.querySelectorAll(".checkbox");
 const items = document.querySelectorAll(".item");
-
 addEventListenerForCheckboxes(checkboxes);
 
 
