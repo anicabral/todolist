@@ -1,8 +1,7 @@
-// HELPER FUNCTIONS:
+// HELPER FUNCTIONS ==========================================
 const checkElement = (list, itemNameCheck) => {
   list.forEach(item => {
       if (item.itemName === itemNameCheck){
-        console.log('item checked?', item.checked);
         if (item.checked){
           item.checked = false;
         } else {
@@ -20,14 +19,11 @@ const addEventListenerForButtons = (buttons, localStorageKeyName) => {
   buttons.forEach(button => {
     button.addEventListener("click", ()=> {
       let divItem = button.closest('.item');
-      console.log('divItem', divItem);
       if (button.classList.contains('deletebutton')) {
         const itemToRemove = divItem.querySelector('.item-name-check p').innerText;
         let savedTasks = getLocalStorageList(localStorageKeyName);
         let updatedSavedTasks = deleteElementByKey(savedTasks, 'itemName', itemToRemove);
-        console.log('eliminadno de local storage keyname', localStorageKeyName);
         divItem.remove();
-        console.log('updated SaveTasks', updatedSavedTasks);
         localStorage.setItem(localStorageKeyName, JSON.stringify(updatedSavedTasks));
       };
     });
@@ -44,7 +40,7 @@ const addEventListenerForCheckboxes = (checkboxes) => {
         parent.children[1].style.textDecoration = "line-through";
       }
       // 1. obtain what is currently in local storage.
-      savedTodays = JSON.parse(localStorage.getItem('ls-todays'));
+      savedTodays = JSON.parse(localStorage.getItem("ls-todays"));
       // 2. obtain name of task to be checked or unchecked.
       let taskToCheck = parent.children[1].innerText;
       // 3. checked or unchecked task in array
@@ -55,7 +51,7 @@ const addEventListenerForCheckboxes = (checkboxes) => {
   });
 };
 
-// GET UPDATED LOCAL STORAGE Today LIST IF LIST EXISTS
+// get updated local storage
 const getLocalStorageList = (listName) => {
   let savedListAuxiliar = []; // si no hay nada dentro del localStorage, devuelve esta lista vacia
   let localStorageData = localStorage.getItem(listName); // obtengo objeto del localStorage
@@ -64,6 +60,10 @@ const getLocalStorageList = (listName) => {
   };
   return savedListAuxiliar;
 }
+
+
+// RENDER CATEGORIES ==========================================
+
 let savedTodays = getLocalStorageList('ls-todays');
 savedTodays.forEach(today => {
   const todaysSection = document.querySelector("#todays");
@@ -80,6 +80,14 @@ savedTodays.forEach(today => {
                                                       </div>
                                                       <button class="deletebutton"> Delete </button>
                                                     </div>`);
+  let localStorageKeyName = 'ls-todays';
+
+  let buttons = todaysSection.querySelectorAll("button");
+  addEventListenerForButtons(buttons, localStorageKeyName);
+
+  let checkboxes = todaysSection.querySelectorAll(".checkbox");
+  let items = todaysSection.querySelectorAll(".item");
+  addEventListenerForCheckboxes(checkboxes);
 });
 
 let savedWeeks = getLocalStorageList('ls-week');
@@ -98,15 +106,37 @@ savedWeeks.forEach(week => {
                                                       </div>
                                                       <button class="deletebutton"> Delete </button>
                                                     </div>`);
+  let localStorageKeyName = 'ls-week';
+
+  let buttons = weekSection.querySelectorAll("button");
+  addEventListenerForButtons(buttons, localStorageKeyName);
+
+  let checkboxes = weekSection.querySelectorAll(".checkbox");
+  let items = weekSection.querySelectorAll(".item");
+  addEventListenerForCheckboxes(checkboxes);
 });
 
-// ADD NEW ITEM BUTTON
+// toggle categories
+const category = document.querySelectorAll("h3");
+
+category.forEach(category => {
+  category.addEventListener("click", ()=> {
+    let categoryItems = category.parentElement;
+    let items = categoryItems.children[1];
+    if (items.style.display === "none") {
+        items.style.display = "flex";
+      } else {
+       items.style.display = "none";
+      }
+    });
+});
+
+// ADD NEW ITEM BUTTON ======================================================
+
 const addNewButtons = document.querySelectorAll(".addnew");
 addNewButtons.forEach(addNewButton => {
   addNewButton.addEventListener("click", () => {
-    console.log('apretar boton');
     let divToAddItemId = addNewButton.parentElement.id;
-    console.log('div TO ADD ITEM ID ES ', divToAddItemId);
     let newItem = prompt('Which item do you want to add?');
     if(newItem === ""){
       alert('you cant add an empty task');
@@ -126,6 +156,7 @@ addNewButtons.forEach(addNewButton => {
       } else {
         localStorageKeyName = 'ls-week';
       }
+
       let lastAddedItemButtons = lastAddedItem.querySelectorAll('button');
       addEventListenerForButtons(lastAddedItemButtons, localStorageKeyName);
       let lastAddedItemCheckboxes = lastAddedItem.querySelectorAll('.checkbox');
@@ -137,36 +168,8 @@ addNewButtons.forEach(addNewButton => {
       let itemToAdd = {itemName: newItem, checked: false };
       // 3. Agregar el nuevo objeto a la lista.
       savedTasks.push(itemToAdd);
-      console.log('se esta guardando en', localStorageKeyName);
       // 4. Guardar la lista con el key que corresponda.
       localStorage.setItem(localStorageKeyName, JSON.stringify(savedTasks));
     }
   });
-});
-
-const buttons = document.querySelectorAll("button");
-let localStorageKeyName = 'ls-todays';
-addEventListenerForButtons(buttons, localStorageKeyName);
-
-
-// checkbox
-const checkboxes = document.querySelectorAll(".checkbox");
-const items = document.querySelectorAll(".item");
-addEventListenerForCheckboxes(checkboxes);
-
-
-// toggle categories
-const category = document.querySelectorAll("h3");
-
-category.forEach(category => {
-  category.addEventListener("click", ()=> {
-    let categoryItems = category.parentElement;
-    let items = categoryItems.children[1];
-    console.log("hiciste click");
-    if (items.style.display === "none") {
-        items.style.display = "flex";
-      } else {
-       items.style.display = "none";
-      }
-    });
 });
