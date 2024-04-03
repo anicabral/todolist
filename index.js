@@ -30,7 +30,7 @@ const addEventListenerForButtons = (buttons, localStorageKeyName) => {
   });
 }
 
-const addEventListenerForCheckboxes = (checkboxes) => {
+const addEventListenerForCheckboxes = (checkboxes, localStorageKeyName) => {
   checkboxes.forEach(checkbox => {
     checkbox.addEventListener("change", (event) => {
       let parent = checkbox.parentElement;
@@ -40,13 +40,13 @@ const addEventListenerForCheckboxes = (checkboxes) => {
         parent.children[1].style.textDecoration = "line-through";
       }
       // 1. obtain what is currently in local storage.
-      savedTodays = JSON.parse(localStorage.getItem("ls-todays"));
+      savedTasks = JSON.parse(localStorage.getItem(localStorageKeyName));
       // 2. obtain name of task to be checked or unchecked.
       let taskToCheck = parent.children[1].innerText;
       // 3. checked or unchecked task in array
-      let checkedSavedTodays = checkElement(savedTodays, taskToCheck);
+      let checkedSavedTasks = checkElement(savedTasks, taskToCheck);
       // 4. save to localstorage
-      localStorage.setItem('ls-todays', JSON.stringify(checkedSavedTodays));
+      localStorage.setItem(localStorageKeyName, JSON.stringify(checkedSavedTasks));
       });
   });
 };
@@ -87,7 +87,7 @@ savedTodays.forEach(today => {
 
   let checkboxes = todaysSection.querySelectorAll(".checkbox");
   let items = todaysSection.querySelectorAll(".item");
-  addEventListenerForCheckboxes(checkboxes);
+  addEventListenerForCheckboxes(checkboxes, localStorageKeyName);
 });
 
 let savedWeeks = getLocalStorageList('ls-week');
@@ -113,7 +113,7 @@ savedWeeks.forEach(week => {
 
   let checkboxes = weekSection.querySelectorAll(".checkbox");
   let items = weekSection.querySelectorAll(".item");
-  addEventListenerForCheckboxes(checkboxes);
+  addEventListenerForCheckboxes(checkboxes, localStorageKeyName);
 });
 
 // toggle categories
@@ -160,7 +160,7 @@ addNewButtons.forEach(addNewButton => {
       let lastAddedItemButtons = lastAddedItem.querySelectorAll('button');
       addEventListenerForButtons(lastAddedItemButtons, localStorageKeyName);
       let lastAddedItemCheckboxes = lastAddedItem.querySelectorAll('.checkbox');
-      addEventListenerForCheckboxes(lastAddedItemCheckboxes);
+      addEventListenerForCheckboxes(lastAddedItemCheckboxes, localStorageKeyName);
 
       // 1. Obtener la version actualizada segun que lista sea. (todays o week)
       let savedTasks = getLocalStorageList(localStorageKeyName);
