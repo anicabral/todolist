@@ -18,8 +18,10 @@ const deleteElementByKey = (array, key, value) => {
 const addEventListenerForButtons = (buttons, localStorageKeyName) => {
   buttons.forEach(button => {
     button.addEventListener("click", ()=> {
+
       let divItem = button.closest('.item');
       if (button.classList.contains('deletebutton')) {
+
         const itemToRemove = divItem.querySelector('.item-name-check p').innerText;
         let savedTasks = getLocalStorageList(localStorageKeyName);
         let updatedSavedTasks = deleteElementByKey(savedTasks, 'itemName', itemToRemove);
@@ -39,13 +41,11 @@ const addEventListenerForCheckboxes = (checkboxes, localStorageKeyName) => {
       } else {
         parent.children[1].style.textDecoration = "line-through";
       }
-      // 1. obtain what is currently in local storage.
-      savedTasks = JSON.parse(localStorage.getItem(localStorageKeyName));
-      // 2. obtain name of task to be checked or unchecked.
-      let taskToCheck = parent.children[1].innerText;
-      // 3. checked or unchecked task in array
-      let checkedSavedTasks = checkElement(savedTasks, taskToCheck);
-      // 4. save to localstorage
+
+      let itemToCheck = parent.children[1].innerText;
+
+      let savedTasks = getLocalStorageList(localStorageKeyName);
+      let checkedSavedTasks = checkElement(savedTasks, itemToCheck);
       localStorage.setItem(localStorageKeyName, JSON.stringify(checkedSavedTasks));
       });
   });
@@ -140,7 +140,7 @@ addNewButtons.forEach(addNewButton => {
     let newItem = prompt('Which item do you want to add?');
     if(newItem === ""){
       alert('you cant add an empty task');
-    }else {
+    } else if (newItem != null) {
       addNewButton.insertAdjacentHTML('beforebegin', `<div class="item">
                                                         <div class="item-name-check">
                                                           <input type="checkbox" class="checkbox">
@@ -149,14 +149,13 @@ addNewButtons.forEach(addNewButton => {
                                                         <button class="deletebutton"> Delete </button>
                                                       </div>`);
       let parentElementAddNewItem = addNewButton.parentElement;
-      let lastAddedItem = parentElementAddNewItem.querySelector('div:nth-last-child(2)');
+      let lastAddedItem = parentElementAddNewItem.children[parentElementAddNewItem.children.length - 2];
       let localStorageKeyName = '';
       if(divToAddItemId === "todays"){
         localStorageKeyName = 'ls-todays';
       } else {
         localStorageKeyName = 'ls-week';
       }
-
       let lastAddedItemButtons = lastAddedItem.querySelectorAll('button');
       addEventListenerForButtons(lastAddedItemButtons, localStorageKeyName);
       let lastAddedItemCheckboxes = lastAddedItem.querySelectorAll('.checkbox');
